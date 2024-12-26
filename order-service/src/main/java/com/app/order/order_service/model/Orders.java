@@ -15,6 +15,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -27,7 +28,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_order_id", columnList = "orderId"),
+    @Index(name = "idx_user_id", columnList = "userId"),
+    @Index(name = "idx_product_id", columnList = "productId"),
+    @Index(name = "idx_order_status", columnList = "orderStatus")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
