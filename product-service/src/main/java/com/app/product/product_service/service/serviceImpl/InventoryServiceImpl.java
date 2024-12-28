@@ -8,7 +8,6 @@ import com.app.product.product_service.repository.InventoryRepository;
 import com.app.product.product_service.service.InventoryService;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -31,9 +30,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Integer checkStock(Long productId) {
+    public Boolean checkStock(Long productId, int quantity) {
         Inventory inventory = inventoryRepository.findByProduct_ProductId(productId);
-       return  (inventory!=null)?inventory.getStock():0;
+        if (inventory == null) {
+            throw new EntityNotFoundException("Inventory not found for product id: " + productId);
+        }
+        return inventory.getStock() >= quantity;
 
        
     }

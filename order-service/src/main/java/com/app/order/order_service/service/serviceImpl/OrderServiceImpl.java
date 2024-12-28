@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.order.order_service.client.ProductClient;
 import com.app.order.order_service.model.Orders;
 import com.app.order.order_service.repository.OrderRepository;
 import com.app.order.order_service.service.OrderService;
@@ -15,8 +16,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ProductClient productClient;
+
     @Override
     public Long createOrder(Orders order) {
+    boolean stockAvailable = productClient.checkStock(order.getProductId(), order.getQuantity());
+    if (!stockAvailable) {
+         throw new RuntimeException("Product is out of stock!");
+    }
         validateOrder(order);
         return orderRepository.save(order).getOrderId();
     }

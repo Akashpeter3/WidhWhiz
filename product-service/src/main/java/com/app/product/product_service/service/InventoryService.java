@@ -4,6 +4,6 @@ import com.app.product.product_service.dto.InventoryDTO;
 
 public interface InventoryService {
     void updateStock(InventoryDTO inventoryDTO);
-    Integer checkStock(Long productId);
+    Boolean checkStock(Long productId,int quantity);
 
 }
