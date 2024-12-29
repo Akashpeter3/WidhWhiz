@@ -2,15 +2,10 @@ server:
   port: 8761
   servlet:
     session:
-      timeout: 5m # Session timeout after 5 minutes of inactivity
+      timeout: 15m # Increase session timeout for stability
       cookie:
         http-only: true
-        secure: false # Set to true if HTTPS is enabled
-
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
+        secure: true # Set to true if HTTPS is enabled
 
 spring:
   application:
@@ -20,3 +15,51 @@ spring:
     user:
       name: admin
       password: admin123
+
+  session:
+    store-type: redis # Use Redis for distributed session management (Optional)
+    timeout: 900s # 15-minute session timeout
+
+eureka:
+  instance:
+    hostname: eurekaserver
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10 # Heartbeat every 10s
+    lease-expiration-duration-in-seconds: 30 # Expire after 30s without heartbeat
+    metadata-map:
+      zone: primary
+      cluster: main
+
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    healthcheck:
+      enabled: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # Single instance setup
+
+  server:
+    enable-self-preservation: true # Prevents mass eviction during network glitches
+    eviction-interval-timer-in-ms: 5000 # Eviction every 5 seconds
+    response-cache-update-interval-ms: 3000 # Cache updated every 3 seconds
+    renewal-percent-threshold: 0.85 # Lower threshold to avoid early self-preservation trigger
+    wait-time-in-ms-when-sync-empty: 5000 # Wait for clients during startup
+    use-read-only-response-cache: true # Performance boost by caching registry queries
+    max-threads-for-peer-replication: 20 # Handle peer replication efficiently
+    expected-client-renewal-interval-seconds: 30 # Expected heartbeat interval
+    peer-node-read-timeout-ms: 3000 # Peer timeout
+    peer-node-connect-timeout-ms: 3000 # Peer connect timeout
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    org.springframework.cloud.netflix.eureka: DEBUG
