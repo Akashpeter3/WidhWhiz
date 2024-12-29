@@ -17,38 +17,53 @@ spring:
       password: admin123
 
   session:
-    store-type: redis # Use Redis for distributed session management (Optional)
+    store-type: redis # Distributed session management (Optional)
     timeout: 900s # 15-minute session timeout
+
+  # Enable SSL (Optional, for production)
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    key-alias: tomcat
+    key-store-type: PKCS12
+    enabled: true
+
+  main:
+    allow-bean-definition-overriding: true # Ensure no conflicts during bean creation
 
 eureka:
   instance:
     hostname: eurekaserver
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10 # Heartbeat every 10s
-    lease-expiration-duration-in-seconds: 30 # Expire after 30s without heartbeat
+    lease-expiration-duration-in-seconds: 30 # Expire if no heartbeat within 30s
     metadata-map:
       zone: primary
       cluster: main
+    status-page-url: http://${eureka.instance.hostname}:${server.port}/actuator/info
+    health-check-url: http://${eureka.instance.hostname}:${server.port}/actuator/health
 
   client:
-    register-with-eureka: false
-    fetch-registry: false
+    register-with-eureka: false # Eureka server doesn't register itself
+    fetch-registry: false # No need to fetch registry for Eureka itself
     healthcheck:
       enabled: true
     service-url:
       defaultZone: http://localhost:8761/eureka/ # Single instance setup
+    on-demand-update-status-change: true # Faster propagation of instance status changes
 
   server:
-    enable-self-preservation: true # Prevents mass eviction during network glitches
+    enable-self-preservation: true # Prevent mass eviction during network glitches
     eviction-interval-timer-in-ms: 5000 # Eviction every 5 seconds
-    response-cache-update-interval-ms: 3000 # Cache updated every 3 seconds
-    renewal-percent-threshold: 0.85 # Lower threshold to avoid early self-preservation trigger
-    wait-time-in-ms-when-sync-empty: 5000 # Wait for clients during startup
-    use-read-only-response-cache: true # Performance boost by caching registry queries
-    max-threads-for-peer-replication: 20 # Handle peer replication efficiently
-    expected-client-renewal-interval-seconds: 30 # Expected heartbeat interval
-    peer-node-read-timeout-ms: 3000 # Peer timeout
-    peer-node-connect-timeout-ms: 3000 # Peer connect timeout
+    response-cache-update-interval-ms: 3000 # Registry cache updated every 3 seconds
+    renewal-percent-threshold: 0.85 # Lower threshold to avoid premature evictions
+    wait-time-in-ms-when-sync-empty: 5000 # Graceful startup
+    use-read-only-response-cache: true # Boost performance by caching read requests
+    max-threads-for-peer-replication: 30 # Optimize replication
+    expected-client-renewal-interval-seconds: 30
+    peer-node-read-timeout-ms: 3000 # 3-second timeout for peer nodes
+    peer-node-connect-timeout-ms: 3000 # 3-second connection timeout for peer nodes
+    peer-eureka-nodes-update-interval-ms: 10000 # Update peer node list every 10s
 
 management:
   endpoints:
@@ -58,8 +73,25 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
+    db:
+      enabled: true
 
 logging:
   level:
     com.netflix.eureka: INFO
     org.springframework.cloud.netflix.eureka: DEBUG
+    org.springframework.web: WARN
+    org.springframework.security: INFO
+  file:
+    name: /var/log/eureka-server.log
+  pattern:
+    # Console pattern with ANSI colors
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %highlight(%-5level) %cyan(%logger{36}) - %msg%n"
+
+    # File logging pattern without colors
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
