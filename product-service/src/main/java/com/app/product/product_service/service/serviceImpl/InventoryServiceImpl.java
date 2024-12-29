@@ -18,14 +18,22 @@ public class InventoryServiceImpl implements InventoryService {
 
 
     @Override
-    public void updateStock(InventoryDTO inventoryDTO) {
+    public void updateStock(InventoryDTO inventoryDTO,int quantity) {
        
         Inventory inventory = inventoryRepository.findByProduct_ProductId(inventoryDTO.getProductId());
         if (inventory == null) {
             throw new EntityNotFoundException("Inventory not found for product id: " + inventoryDTO.getProductId());
         }
-        inventory.setStock(inventoryDTO.getStock());
-        inventoryRepository.save(inventory);
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity cannot be zero or negative");
+        }else if(quantity>0&&quantity<=inventory.getStock()){
+            inventory.setStock(inventory.getStock() - quantity);
+            inventoryRepository.save(inventory);
+        }
+
+       // inventory.setStock(inventoryDTO.getStock());
+        
        
     }
 

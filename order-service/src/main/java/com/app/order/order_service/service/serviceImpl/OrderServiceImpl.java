@@ -23,8 +23,9 @@ public class OrderServiceImpl implements OrderService {
     public Long createOrder(Orders order) {
     boolean stockAvailable = productClient.checkStock(order.getProductId(), order.getQuantity());
     if (!stockAvailable) {
-         throw new RuntimeException("Product is out of stock!");
+        throw new RuntimeException("Product is out of stock!");
     }
+    productClient.updateStock(order.getProductId(), order.getQuantity());
         validateOrder(order);
         return orderRepository.save(order).getOrderId();
     }

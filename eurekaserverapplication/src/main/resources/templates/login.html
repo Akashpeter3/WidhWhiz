@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Eureka Server Login</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gHskX+ElxP5SU6Ywq8z1X2IH17X9T/0PnPo3T2w5WlRmJ3Z5k7h6V2JknLPMO3f0"
+      crossorigin="anonymous"
+    />
+
+    <!-- Custom CSS -->
+    <style>
+      body {
+        background: linear-gradient(135deg, #2af598 0%, #009efd 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", sans-serif;
+      }
+      .login-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 450px;
+        width: 100%;
+        text-align: center;
+      }
+      .login-title {
+        font-size: 2.5rem;
+        margin-bottom: 25px;
+        font-weight: bold;
+        color: #fff;
+      }
+      .form-control {
+        margin-bottom: 25px;
+        padding: 15px;
+        font-size: 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+      }
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: none;
+        border-color: #fff;
+        outline: none;
+      }
+      .login-btn {
+        background-color: #007bff;
+        border: none;
+        padding: 14px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+      .login-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 0.9rem;
+        color: #e6e6e6;
+      }
+      .alert {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="login-container">
+      <h1 class="login-title">Eureka Server</h1>
+
+      <!-- Error Message Display -->
+      <div
+        th:if="${message}"
+        class="alert alert-danger"
+        th:text="${message}"
+      ></div>
+
+      <!-- Login Form -->
+      <form th:action="@{/login}" method="post">
+        <div class="mb-4">
+          <input
+            type="text"
+            name="username"
+            class="form-control"
+            placeholder="Username"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn login-btn">Login</button>
+      </form>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; 2024 Eureka Server | Designed by <b>WishWhiz</b></p>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HoAfsfUNP4C2U0cwnDgEf52p4MwRHO/Zg6PFOY6N0w3zvucFgOpDSlE6Dm2IXwL7"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

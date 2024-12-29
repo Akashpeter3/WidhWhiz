@@ -1,15 +1,9 @@
 server:
-  port: 8081
+  port: 8083
 
 spring:
   application:
     name: order-service
-    cloud:
-      netflix:
-        eureka:
-          client:
-            service-url:
-              defaultZone: http://localhost:8761/eureka/
 
   datasource:
     url: jdbc:mysql://localhost:3306/WishWhiz
@@ -19,9 +13,91 @@ spring:
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
+      idle-timeout: 60000 # 60 seconds idle timeout
+      connection-timeout: 30000 # 30 seconds to wait for a connection
+      max-lifetime: 1800000 # 30 minutes for maximum connection lifetime
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
+
+  cache:
+    type: caffeine
+
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: true
+        ttl: 60s # Cache instances for 60 seconds
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://admin:admin123@localhost:8761/eureka/
+    healthcheck:
+      enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    initial-instance-info-replication-interval-seconds: 5 # First heartbeat after 5 seconds
+    registry-fetch-interval-seconds: 15 # Fetch registry every 15 seconds
+    instance-info-replication-interval-seconds: 10 # Send heartbeats every 10 seconds
+    eureka-server-connect-timeout-seconds: 5 # Timeout for connecting to Eureka server
+    eureka-server-read-timeout-seconds: 8 # Read timeout for server
+    eureka-server-total-retries: 8 # Retry 8 times if server is unavailable
+    eureka-server-retry-interval-seconds: 5 # Retry every 5 seconds
+    service-url-poll-interval-seconds: 10 # Poll Eureka server every 10 seconds
+    enabled: true # Always keep Eureka client enabled
+
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10 # Heartbeat every 10 seconds
+    lease-expiration-duration-in-seconds: 30 # Expire if no heartbeat for 30 seconds
+    hostname: ${spring.application.name}-${random.uuid} # Unique hostname for each instance
+    instance-id: ${spring.application.name}:${server.port} # Unique instance identifier
+    metadata-map:
+      zone: primary
+      cluster: main
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus # Expose actuator endpoints
+  endpoint:
+    health:
+      show-details: always
+  health:
+    db:
+      enabled: true
+    cache:
+      enabled: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+        retryer: feign.Retryer.Default
+        errorDecoder: feign.codec.ErrorDecoder.Default
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  basic-auth:
+    admin:
+      username: admin
+      password: admin123
+
+logging:
+  level:
+    com.netflix.eureka: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG

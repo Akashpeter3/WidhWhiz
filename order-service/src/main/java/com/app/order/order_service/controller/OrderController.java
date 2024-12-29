@@ -1,12 +1,15 @@
 package com.app.order.order_service.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.app.order.order_service.model.Orders;
 import com.app.order.order_service.service.OrderService;
@@ -30,8 +33,12 @@ public class OrderController {
      */
     @PostMapping("/create")
     public ResponseEntity<String> createOrder(@Valid @RequestBody Orders order) {
-        Long orderId = orderService.createOrder(order);
-        return ResponseEntity.ok("Order created successfully with ID: " + orderId);
+        try {
+            Long orderId = orderService.createOrder(order);
+            return ResponseEntity.ok("Order created successfully with ID: " + orderId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create order", e);
+        }
     }
 
     /**
@@ -41,7 +48,26 @@ public class OrderController {
      */
     @GetMapping("/{orderId}")
     public ResponseEntity<Orders> getOrder(@PathVariable Long orderId) {
-        Orders order = orderService.getOrder(orderId);
-        return ResponseEntity.ok(order);
+        try {
+            Orders order = orderService.getOrder(orderId);
+            if (order == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
+            }
+            return ResponseEntity.ok(order);
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to fetch order", e);
+        }
+    }
+
+    /**
+     * Global exception handler for ResponseStatusException.
+     * @param ex the exception
+     * @return ResponseEntity with error message
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
     }
 }

@@ -1,5 +1,11 @@
 server:
   port: 8761
+  servlet:
+    session:
+      timeout: 5m # Session timeout after 5 minutes of inactivity
+      cookie:
+        http-only: true
+        secure: false # Set to true if HTTPS is enabled
 
 eureka:
   client:
@@ -9,3 +15,8 @@ eureka:
 spring:
   application:
     name: eurekaserver
+
+  security:
+    user:
+      name: admin
+      password: admin123
