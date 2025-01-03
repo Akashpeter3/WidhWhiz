@@ -1,6 +1,8 @@
 package com.app.auth.user_authentication_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,50 +20,55 @@ import com.app.auth.user_authentication_service.service.AuthService;
 
 import jakarta.validation.Valid;
 
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
-  
-    @PostMapping("/addUser")
-    public String addUser(@Valid @RequestBody User user) {
-        return authService.addUser(user);
-    }
+  @Autowired
+  private AuthService authService;
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
-    @GetMapping("/welcome")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String welcomeUser() {
-      return "Welcome Admin";
+  @PostMapping("/addUser")
+  public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
+    try {
+      String response = authService.addUser(user);
+      return new ResponseEntity<>(response, HttpStatus.CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>("User could not be added", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
 
-    @GetMapping("/admin")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String welcomeAdmin() {
-      return "Welcome Admin to the Admin Page";
-    }
-    
-    @GetMapping("/user")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public String userData() {
-        return "Welcome User";
-    }
+  @GetMapping("/welcome")
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  public ResponseEntity<String> welcomeUser() {
+    return new ResponseEntity<>("Welcome Admin", HttpStatus.OK);
+  }
 
+  @GetMapping("/admin")
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  public ResponseEntity<String> welcomeAdmin() {
+    return new ResponseEntity<>("Welcome Admin to the Admin Page", HttpStatus.OK);
+  }
 
-    @PostMapping("/authenticate")
-    public String authenticateAndGenerateToken(@Valid @RequestBody AuthRequest authRequest) {
-        
-      Authentication authentication =  authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+  @GetMapping("/user")
+  @PreAuthorize("hasAuthority('ROLE_USER')")
+  public ResponseEntity<String> userData() {
+    return new ResponseEntity<>("Welcome User", HttpStatus.OK);
+  }
+
+  @PostMapping("/authenticate")
+  public ResponseEntity<String> authenticateAndGenerateToken(@Valid @RequestBody AuthRequest authRequest) {
+    try {
+      Authentication authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
       if (authentication.isAuthenticated()) {
-          return authService.authenticateAndGenerateToken(authRequest);
-
+        String token = authService.authenticateAndGenerateToken(authRequest);
+        return new ResponseEntity<>(token, HttpStatus.OK);
       } else {
-        throw new UsernameNotFoundException("Invalid username or password");
+        return new ResponseEntity<>("Invalid Credentials", HttpStatus.UNAUTHORIZED);
       }
+    } catch (Exception e) {
+      return new ResponseEntity<>("Authentication failed - Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
+  }
 }

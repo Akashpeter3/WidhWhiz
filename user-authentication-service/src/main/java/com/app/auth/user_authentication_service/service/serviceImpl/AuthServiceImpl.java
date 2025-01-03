@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String authenticateAndGenerateToken(AuthRequest authRequest) {
         Map<String, Object> claims = new HashMap<>();
-        return jwtUtil.generateToken(claims,authRequest.getUserName());
+        // Authentication authentication = authenticationManager.authenticate(
+        //         new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+        // if (authentication.isAuthenticated()) {
+        //     return jwtUtil.generateToken(claims,authRequest.getUserName());
+        // }
+      return jwtUtil.generateToken(claims,authRequest.getUserName());
     }
 
  
