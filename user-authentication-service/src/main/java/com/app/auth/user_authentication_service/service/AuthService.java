@@ -5,4 +5,6 @@ import com.app.auth.user_authentication_service.dto.AuthResponse;
 
 public interface AuthService {
     AuthResponse login(AuthRequest authRequest);
+
+    String authenticateAndGenerateToken(AuthRequest authRequest);
 }

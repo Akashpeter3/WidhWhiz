@@ -1,5 +1,8 @@
 package com.app.auth.user_authentication_service.service.serviceImpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -24,9 +27,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(AuthRequest authRequest) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        String token = jwtUtil.generateToken(authRequest.getUsername());
-        return new AuthResponse(token);
+        // authenticationManager.authenticate(
+        //     new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+        // String token = jwtUtil.generateToken(authRequest.getUserName());
+        // return new AuthResponse(token);
+        return null;
+    }
+
+    @Override
+    public String authenticateAndGenerateToken(AuthRequest authRequest) {
+        Map<String, Object> claims = new HashMap<>();
+        return jwtUtil.generateToken(claims,authRequest.getUserName());
     }
 }
