@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: product-service
+  mvc:
+    static-path-pattern: /static/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/WishWhiz
@@ -38,38 +40,38 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://admin:admin123@localhost:8761/eureka/
+      defaultZone: http://admin:admin123@localhost:8761/eureka/ # Basic Auth in URL
     healthcheck:
       enabled: true
     register-with-eureka: true
     fetch-registry: true
-    initial-instance-info-replication-interval-seconds: 5 # First heartbeat after 5 seconds
-    registry-fetch-interval-seconds: 15 # Fetch registry every 15 seconds
-    instance-info-replication-interval-seconds: 10 # Send heartbeats every 10 seconds
-    eureka-server-connect-timeout-seconds: 5 # Timeout for connecting to Eureka server
-    eureka-server-read-timeout-seconds: 8 # Read timeout for server
-    eureka-server-total-retries: 8 # Retry 8 times if server is unavailable
-    eureka-server-retry-interval-seconds: 5 # Retry every 5 seconds
-    service-url-poll-interval-seconds: 10 # Poll Eureka server every 10 seconds
-    enabled: true # Always keep Eureka client enabled
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 15
+    instance-info-replication-interval-seconds: 10
+    eureka-server-connect-timeout-seconds: 5
+    eureka-server-read-timeout-seconds: 8
+    eureka-server-total-retries: 8
+    eureka-server-retry-interval-seconds: 5
+    service-url-poll-interval-seconds: 10
+    enabled: true
 
   instance:
     prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 10 # Heartbeat every 10 seconds
-    lease-expiration-duration-in-seconds: 30 # Expire if no heartbeat for 30 seconds
-    hostname: ${spring.application.name}-${random.uuid} # Unique hostname for each instance
-    instance-id: ${spring.application.name}:${server.port} # Unique instance identifier
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    hostname: ${spring.application.name}-${random.uuid}
+    instance-id: ${spring.application.name}:${server.port}
     metadata-map:
       zone: primary
       cluster: main
-    status-page-url-path: /actuator/info
-    health-check-url-path: /actuator/health
+    status-page-url: http://localhost:${server.port}/actuator/info # Correct Actuator URL
+    health-check-url: http://localhost:${server.port}/actuator/health # Ensure Eureka can reach healthcheck endpoint
 
 management:
   endpoints:
     web:
       exposure:
-        include: health, info, metrics, prometheus # Expose actuator endpoints
+        include: health, info, metrics, prometheus
   endpoint:
     health:
       show-details: always
@@ -101,3 +103,4 @@ logging:
   level:
     com.netflix.eureka: DEBUG
     org.springframework.cloud.netflix.eureka: DEBUG
+    org.springframework.boot.actuate.endpoint: DEBUG

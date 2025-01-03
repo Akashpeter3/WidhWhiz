@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: order-service
+  mvc:
+    static-path-pattern: /static/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/WishWhiz

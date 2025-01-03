@@ -1,4 +1,4 @@
-package com.app.eureka.server.eurekaserverapplication.config;
+package com.app.eureka.server.eurekaserverapplication.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
