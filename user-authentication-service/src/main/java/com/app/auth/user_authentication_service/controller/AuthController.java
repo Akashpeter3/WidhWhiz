@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.auth.user_authentication_service.dto.AuthRequest;
-import com.app.auth.user_authentication_service.dto.AuthResponse;
+import com.app.auth.user_authentication_service.model.User;
 import com.app.auth.user_authentication_service.service.AuthService;
-import com.netflix.discovery.converters.Auto;
 
 import jakarta.validation.Valid;
 
@@ -29,10 +28,9 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     
   
-    
-    @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest authRequest) {
-        return authService.login(authRequest);
+    @PostMapping("/addUser")
+    public String addUser(@Valid @RequestBody User user) {
+        return authService.addUser(user);
     }
 
     @GetMapping("/welcome")
