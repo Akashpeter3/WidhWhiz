@@ -30,6 +30,8 @@ spring:
 
   cache:
     type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=600s
 
   cloud:
     loadbalancer:
@@ -104,3 +106,4 @@ logging:
     com.netflix.eureka: DEBUG
     org.springframework.cloud.netflix.eureka: DEBUG
     org.springframework.boot.actuate.endpoint: DEBUG
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
