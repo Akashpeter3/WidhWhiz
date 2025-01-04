@@ -1,4 +1,6 @@
 package com.app.auth.user_authentication_service.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,11 +10,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.app.auth.user_authentication_service.filter.JwtFilter;
 import com.app.auth.user_authentication_service.service.serviceImpl.UserInfoUserDetailService;
 
 @Configuration
@@ -20,42 +25,33 @@ import com.app.auth.user_authentication_service.service.serviceImpl.UserInfoUser
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-       @Bean
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // UserDetails admin = User.withUsername("Akash")
-        //         .password(passwordEncoder.encode("Akash123"))
-        //         .roles("ADMIN")
-        //         .build();
-
-        // UserDetails user = User.withUsername("Peter")
-        //         .password(passwordEncoder.encode("Peter"))
-        //         .roles("USER","ADMIN")
-        //         .build();
         return new UserInfoUserDetailService();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/authenticate").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                        .permitAll()
-               
-            )
-            .logout(logout -> logout
-                .permitAll()
-            );
-
-        return http.build();
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/authenticate").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
@@ -69,8 +65,5 @@ public class SecurityConfig {
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-
     }
-
-
 }
