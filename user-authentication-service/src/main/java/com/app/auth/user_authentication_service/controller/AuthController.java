@@ -3,6 +3,7 @@ package com.app.auth.user_authentication_service.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,7 @@ public class AuthController {
   private AuthenticationManager authenticationManager;
 
   @PostMapping("/addUser")
+  @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
   public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
     try {
       String response = authService.addUser(user);

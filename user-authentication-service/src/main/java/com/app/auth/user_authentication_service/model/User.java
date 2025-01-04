@@ -33,6 +33,12 @@ public class User {
     @Column(name = "roles", nullable = false)
     private String roles;
 
+   public User(String username, String password, String email, String roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.roles = roles;
+    }
  
 
 
