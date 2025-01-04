@@ -2,17 +2,14 @@ package com.app.auth.user_authentication_service.filter;
 
 import java.io.IOException;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.app.auth.user_authentication_service.config.UserToUserDetails;
 import com.app.auth.user_authentication_service.service.serviceImpl.UserInfoUserDetailService;
 import com.app.auth.user_authentication_service.util.JwtUtil;
 
