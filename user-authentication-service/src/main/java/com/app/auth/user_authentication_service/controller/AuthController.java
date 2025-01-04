@@ -35,7 +35,7 @@ public class AuthController {
       String response = authService.addUser(user);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (Exception e) {
-      return new ResponseEntity<>("User could not be added", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
