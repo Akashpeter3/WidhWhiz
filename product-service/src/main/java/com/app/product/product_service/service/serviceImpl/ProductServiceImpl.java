@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
         if (productRequestDTO.getCategoryId() != null) {
             ProductCategory productCategory = categoryRepository.findById(productRequestDTO.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-            product.setCategory(productCategory);(productCategory);
+            product.setCategory(productCategory);
         }
 
         Product updatedProduct = productRepository.save(product);
