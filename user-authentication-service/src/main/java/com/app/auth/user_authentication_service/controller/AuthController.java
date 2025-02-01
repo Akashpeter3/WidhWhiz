@@ -9,9 +9,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.auth.user_authentication_service.dto.AuthRequest;
@@ -28,7 +30,7 @@ public class AuthController {
   @Autowired
   private AuthenticationManager authenticationManager;
 
-  @PostMapping("/addUser")
+  @PostMapping("/register")
   @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
   public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
     try {
@@ -57,7 +59,7 @@ public class AuthController {
     return new ResponseEntity<>("Welcome User", HttpStatus.OK);
   }
 
-  @PostMapping("/authenticate")
+  @PostMapping("/token")
   public ResponseEntity<String> authenticateAndGenerateToken(@Valid @RequestBody AuthRequest authRequest) {
     try {
       Authentication authentication = authenticationManager.authenticate(
@@ -71,5 +73,11 @@ public class AuthController {
     } catch (Exception e) {
       return new ResponseEntity<>("Authentication failed - Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  @GetMapping("/validateToken")
+  public String validateToken(@RequestParam("token")String token) {
+    authService.validateToken(token);
+    return "Token is valid";
   }
 }

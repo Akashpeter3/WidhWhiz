@@ -47,5 +47,20 @@ public class AuthServiceImpl implements AuthService {
       return jwtUtil.generateToken(claims,authRequest.getUserName());
     }
 
+    @Override
+    public void validateToken(String token, String username) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'validateToken'");
+    }
+
+    @Override
+    public void validateToken(String token) {
+      jwtUtil.validateToken2(token);
+    }
+
+  
+
+  
+
  
 }

@@ -8,6 +8,10 @@ spring:
     static-path-pattern: /static/**
   main:
     web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+  systemProperties:
+    io.netty.transport.noNative: true
 
   datasource:
     url: jdbc:mysql://localhost:3306/WishWhiz
@@ -42,11 +46,20 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/product/**
+          filters:
+            - Authentication
 
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order/**
+          filters:
+            - Authentication
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
 
     loadbalancer:
       cache:
