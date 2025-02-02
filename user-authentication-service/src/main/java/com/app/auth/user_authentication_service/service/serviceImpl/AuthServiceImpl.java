@@ -58,6 +58,11 @@ public class AuthServiceImpl implements AuthService {
       jwtUtil.validateToken2(token);
     }
 
+    @Override
+    public String extractUsername(String token) {
+      return jwtUtil.extractUsername(token);
+    }
+
   
 
   

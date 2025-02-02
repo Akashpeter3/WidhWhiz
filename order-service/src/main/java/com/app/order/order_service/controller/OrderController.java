@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,13 +27,16 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createOrder(@Valid @RequestBody Orders order) {
+    public ResponseEntity<String> createOrder(@Valid @RequestBody Orders order,
+            @RequestHeader("username") String username) {
+       System.out.println("Username: " + username);
         Long orderId = orderService.createOrder(order);
         return ResponseEntity.ok("Order created with ID: " + orderId);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Orders> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<Orders> getOrder(@PathVariable Long orderId, @RequestHeader("username") String username) {
+         System.out.println("Username: " + username);
         Orders order = orderService.getOrder(orderId);
         if (order == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");

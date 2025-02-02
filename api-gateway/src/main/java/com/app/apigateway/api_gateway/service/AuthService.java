@@ -15,4 +15,8 @@ public class AuthService {
     public void validateToken(String token) {
         webFeignClient.validateToken(token);
     }
+
+    public String extractUserNameFromToken(String token) {
+        return webFeignClient.extractUserNameFromToken(token);
+    }
 }

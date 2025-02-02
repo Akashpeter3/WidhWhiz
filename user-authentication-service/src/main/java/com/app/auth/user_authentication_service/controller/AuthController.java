@@ -80,4 +80,9 @@ public class AuthController {
     authService.validateToken(token);
     return "Token is valid";
   }
+
+  @GetMapping("/extractUsername")
+  public String extractUserNameFromToken(@RequestParam("token")String token) {
+    return authService.extractUsername(token);
+  }
 }

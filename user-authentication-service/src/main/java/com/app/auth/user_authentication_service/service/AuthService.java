@@ -10,4 +10,5 @@ public interface AuthService {
     String authenticateAndGenerateToken(AuthRequest authRequest);
     public void validateToken(String token, String username);
     public void validateToken(String token);
+    String extractUsername(String token);
 }

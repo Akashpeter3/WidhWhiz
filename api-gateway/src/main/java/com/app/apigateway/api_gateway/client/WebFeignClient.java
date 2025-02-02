@@ -10,4 +10,7 @@ public interface WebFeignClient {
     @GetMapping("/auth/validateToken")
     String validateToken(@RequestParam String token);
 
+    @GetMapping("/auth/extractUsername")
+    String extractUserNameFromToken(@RequestParam String token);
+
 }
